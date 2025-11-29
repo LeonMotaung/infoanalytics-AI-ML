@@ -1,171 +1,129 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
 
 def load_and_process_data(filepath):
-    """
-    Loads the CSV, pivots it to wide format so we can use ALL indicators as features.
-    Respects 'Time' and 'Amount' columns as requested.
-    """
     print(f"Loading data from {filepath}...")
-    
-    # Load data
-    # Trying multiple encodings just in case
     try:
         df = pd.read_csv(filepath, encoding='utf-8')
     except UnicodeDecodeError:
         df = pd.read_csv(filepath, encoding='latin1')
 
-    print(f"Columns found: {df.columns.tolist()}")
-    
-    # Ensure we have the required columns
+    # Rename columns if needed to match standard names
     # User specified: Country,Indicator,Source,Unit,Currency,Frequency,Country Code,Time,Amount
-    required_cols = ['Time', 'Indicator', 'Amount']
-    for col in required_cols:
-        if col not in df.columns:
-            # Fallback check if case sensitivity is an issue
-            found = False
-            for existing_col in df.columns:
-                if existing_col.lower() == col.lower():
-                    df = df.rename(columns={existing_col: col})
-                    found = True
-                    break
-            if not found:
-                raise ValueError(f"Missing required column: {col}. Found: {df.columns.tolist()}")
-
-    # Parse Time column
-    df['Time'] = pd.to_datetime(df['Time'], errors='coerce')
+    col_map = {'Time': 'Date', 'Amount': 'Value'}
+    df = df.rename(columns=col_map)
     
-    # Drop rows with invalid Time
-    if df['Time'].isna().any():
-        print(f"Dropping {df['Time'].isna().sum()} rows with invalid Time.")
-        df = df.dropna(subset=['Time'])
+    # Ensure Date is datetime
+    df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+    df = df.dropna(subset=['Date'])
     
-    # Ensure Amount is numeric
-    df['Amount'] = pd.to_numeric(df['Amount'], errors='coerce')
+    # Ensure Value is numeric
+    df['Value'] = pd.to_numeric(df['Value'], errors='coerce')
     
-    # Pivot: Time as index, Indicator as columns, Amount as values
-    # We aggregate by mean in case of duplicates for the same month
-    df_pivot = df.pivot_table(index='Time', columns='Indicator', values='Amount', aggfunc='mean')
-    
-    # Sort by Time
+    # Pivot to wide format (Date x Indicators)
+    df_pivot = df.pivot_table(index='Date', columns='Indicator', values='Value', aggfunc='mean')
     df_pivot = df_pivot.sort_index()
     
-    # Handle missing values
-    # 1. Forward fill (propagate last known value - useful for Yearly data in a Monthly series)
-    df_pivot = df_pivot.ffill()
-    # 2. Backward fill (fill initial missing values)
-    df_pivot = df_pivot.bfill()
-    
-    # Drop columns that are completely empty
+    # Fill missing values
+    df_pivot = df_pivot.ffill().bfill()
     df_pivot = df_pivot.dropna(axis=1, how='all')
     
     return df_pivot
 
-def create_features(df, target_col, lags=[1, 3, 6]):
+def create_classification_target(df, target_indicator):
     """
-    Creates lag features for ALL available indicators to predict the target.
+    Converts a continuous target into a binary classification target.
+    We will predict: Will the value INCREASE next month? (1 = Yes, 0 = No)
     """
-    df_features = df.copy()
+    if target_indicator not in df.columns:
+        raise ValueError(f"Target '{target_indicator}' not found.")
+        
+    # Calculate the change from the previous period
+    # If Change > 0, Class = 1 (Improved/Increased), else 0
+    target_series = df[target_indicator]
     
-    # Create lag features for every column (including the target itself)
-    # This allows the model to learn that "Inflation 3 months ago affects Budget Deficit today"
-    for col in df.columns:
-        for lag in lags:
-            df_features[f'{col}_lag_{lag}'] = df[col].shift(lag)
-            
-    # Add time-based features (Seasonality)
-    df_features['Month'] = df_features.index.month
-    df_features['Quarter'] = df_features.index.quarter
-    df_features['Year'] = df_features.index.year
+    # Create binary target: 1 if value increased, 0 if decreased/same
+    # We shift(-1) because we want to predict the NEXT month's direction using CURRENT data
+    y = (target_series.shift(-1) > target_series).astype(int)
     
-    # Drop rows with NaN values created by shifting
-    df_features = df_features.dropna()
+    # Drop the last row because we don't have a "next month" for it
+    y = y.iloc[:-1]
     
-    return df_features
+    return y
 
-def train_model(filepath, target_indicator='Budget Deficit/Surplus'):
-    # 1. Load and Pivot Data
+def train_svm(filepath, target_indicator='Budget Deficit/Surplus'):
+    # 1. Load Data
     try:
         df = load_and_process_data(filepath)
     except Exception as e:
-        print(f"Error processing data: {e}")
+        print(f"Error: {e}")
         return
-    
-    if target_indicator not in df.columns:
-        print(f"Target '{target_indicator}' not found in dataset.")
-        print("Available indicators:", df.columns.tolist())
-        # Try to find a close match
-        for col in df.columns:
-            if target_indicator.lower() in col.lower():
-                print(f"Did you mean '{col}'?")
-                target_indicator = col
-                break
-        else:
-            return
 
-    print(f"Target Variable: {target_indicator}")
-    print(f"Data shape (Time steps, Indicators): {df.shape}")
+    print(f"Data Loaded. Shape: {df.shape}")
     
-    # 2. Feature Engineering
-    print("Generating features from ALL indicators (Multivariate approach)...")
-    df_processed = create_features(df, target_indicator)
-    print(f"Shape after feature engineering: {df_processed.shape}")
+    # 2. Create Target (Classification)
+    print(f"Target: Predicting direction of '{target_indicator}' (Up/Down)")
+    y = create_classification_target(df, target_indicator)
     
-    # 3. Prepare X and y
-    y = df_processed[target_indicator]
+    # 3. Create Features
+    X = df.iloc[:-1].copy()
+    X['Target_Lag1'] = df[target_indicator].shift(1).iloc[:-1]
+    X['Target_Diff'] = df[target_indicator].diff().iloc[:-1]
     
-    # X should contain all LAGGED features + Time features.
-    # We drop the current timestamp's values for ALL indicators to prevent data leakage.
-    original_cols = df.columns.tolist()
-    X = df_processed.drop(columns=original_cols)
+    valid_indices = ~X.isna().any(axis=1)
+    X = X[valid_indices]
+    y = y[valid_indices]
     
-    # 4. Train/Test Split (Time Series)
-    # Hold out the last 12 periods (e.g., 1 year if monthly) for testing
-    test_size = 12 
-    if len(X) < 20:
-        test_size = 2 # Small dataset fallback
-        
+    # 4. Train/Test Split
+    test_size = 12
     X_train, X_test = X.iloc[:-test_size], X.iloc[-test_size:]
     y_train, y_test = y.iloc[:-test_size], y.iloc[-test_size:]
     
-    # 5. Model Training
-    print(f"Training Gradient Boosting Regressor on {len(X_train)} samples...")
-    model = GradientBoostingRegressor(n_estimators=200, learning_rate=0.05, max_depth=4, random_state=42)
-    model.fit(X_train, y_train)
+    # 5. Scale Data (CRITICAL for SVM)
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
     
-    # 6. Evaluation
-    predictions = model.predict(X_test)
-    rmse = np.sqrt(mean_squared_error(y_test, predictions))
-    r2 = r2_score(y_test, predictions)
+    # 6. Hyperparameter Tuning (Grid Search)
+    print("Tuning SVM Hyperparameters...")
     
-    print(f"\nTest Set Metrics (Last {test_size} periods):")
-    print(f"RMSE: {rmse:,.2f}")
-    print(f"R2 Score: {r2:.4f}")
+    # Define parameter grid
+    param_grid = {
+        'C': [0.1, 1, 10, 100],
+        'gamma': ['scale', 'auto', 0.01, 0.1],
+        'kernel': ['rbf', 'poly', 'sigmoid']
+    }
     
-    # 7. Feature Importance
-    print("\nTop Predictors (Drivers of Budget Deficit):")
-    feature_importance = pd.DataFrame({
-        'feature': X.columns,
-        'importance': model.feature_importances_
-    }).sort_values('importance', ascending=False)
+    # Use TimeSeriesSplit for CV to prevent data leakage
+    tscv = TimeSeriesSplit(n_splits=3)
     
-    print(feature_importance.head(15).to_string(index=False))
+    grid_search = GridSearchCV(
+        SVC(random_state=42), 
+        param_grid, 
+        cv=tscv, 
+        scoring='accuracy', 
+        n_jobs=-1,
+        verbose=1
+    )
     
-    # Plot
-    plt.figure(figsize=(12, 6))
-    plt.plot(y_test.index, y_test, label='Actual', marker='o')
-    plt.plot(y_test.index, predictions, label='Predicted', marker='x', linestyle='--')
-    plt.title(f'Forecast: {target_indicator}')
-    plt.xlabel('Time')
-    plt.ylabel('Amount')
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.savefig('forecast_plot.png')
-    print("\nForecast plot saved to forecast_plot.png")
+    grid_search.fit(X_train_scaled, y_train)
+    
+    print(f"\nBest Parameters: {grid_search.best_params_}")
+    print(f"Best CV Score: {grid_search.best_score_:.2%}")
+    
+    # 7. Evaluate Best Model
+    best_model = grid_search.best_estimator_
+    predictions = best_model.predict(X_test_scaled)
+    accuracy = accuracy_score(y_test, predictions)
+    
+    print(f"\nTest Set Accuracy (Best Model): {accuracy:.2%}")
+    print("\nClassification Report:")
+    print(classification_report(y_test, predictions, target_names=['Decrease', 'Increase'], zero_division=0))
 
 if __name__ == "__main__":
-    train_model('datasource.csv', target_indicator='Budget Deficit/Surplus')
+    train_svm('datasource.csv', target_indicator='Budget Deficit/Surplus')

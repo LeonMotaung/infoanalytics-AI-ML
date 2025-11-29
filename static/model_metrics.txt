@@ -1,0 +1,14 @@
+RMSE: 152.59
+R2: 0.1022
+
+Top Features:
+Lag_1: 0.4911
+Rolling_Mean_3: 0.3782
+Lag_3: 0.0629
+Lag_6: 0.0290
+Time_Step: 0.0209
+Year: 0.0137
+Month: 0.0028
+Quarter: 0.0013
+Country_Nigeria: 0.0000
+Country_Egypt: 0.0000
