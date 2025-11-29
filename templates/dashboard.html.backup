@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Control Dashboard | aizygote</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard-container {
+            padding-top: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-title h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-title p {
+            margin: 0;
+            max-width: 100%;
+        }
+
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 500;
+        }
+
+        .refresh-btn:hover {
+            border-color: var(--primary-lime);
+            background: rgba(204, 255, 0, 0.1);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-lime);
+            transform: translateY(-5px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(204, 255, 0, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(204, 255, 0, 0.1);
+            border: 1px solid rgba(204, 255, 0, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary-lime);
+            font-size: 1.3rem;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-trend {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--primary-lime);
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .chart-card canvas {
+            height: 300px !important;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .chart-filter {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        /* Data Table */
+        .table-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.5rem;
+        }
+
+        thead th {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        tbody tr {
+            background: rgba(255, 255, 255, 0.02);
+            transition: 0.2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        tbody td {
+            padding: 1.2rem 1rem;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tbody tr td:first-child {
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+
+        tbody tr td:last-child {
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .badge-warning {
+            background: rgba(255, 200, 0, 0.1);
+            color: #ffc800;
+            border: 1px solid rgba(255, 200, 0, 0.3);
+        }
+
+        .badge-danger {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff0000;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .badge-lime {
+            background: rgba(204, 255, 0, 0.1);
+            color: var(--primary-lime);
+            border: 1px solid rgba(204, 255, 0, 0.3);
+        }
+
+        /* Analysis Form */
+        .analysis-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--text-main);
+        }
+
+        textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+            transition: 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-lime);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .form-hint {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        #analysisResult {
+            margin-top: 2rem;
+        }
+
+        .alert {
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 0, 0.05);
+            border-color: rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+        }
+
+        .alert-warning {
+            background: rgba(255, 200, 0, 0.05);
+            border-color: rgba(255, 200, 0, 0.3);
+            color: #ffc800;
+        }
+
+        .alert-danger {
+            background: rgba(255, 0, 0, 0.05);
+            border-color: rgba(255, 0, 0, 0.3);
+            color: #ff0000;
+        }
+
+        .alert-info {
+            background: rgba(100, 200, 255, 0.05);
+            border-color: rgba(100, 200, 255, 0.3);
+            color: #64c8ff;
+        }
+
+        .alert h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert p {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .alert strong {
+            color: var(--text-main);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-title h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glow-bg"></div>
+    <div class="circle-graphic"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">aizygote</div>
+            <nav>
+                <ul>
+                    <li><a href="/">About</a></li>
+                    <li><a href="/services">Services</a></li>
+                    <li><a href="/dashboard" class="active">Dashboard</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                </div>
+                <button class="btn-primary">GET STARTED</button>
+            </div>
+        </header>
+
+        <main class="dashboard-container">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h1>Control Dashboard</h1>
+                    <p>Real-time AI safety monitoring and threat analysis</p>
+                </div>
+                <button class="refresh-btn" onclick="refreshStats()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Refresh Data</span>
+                </button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="stat-value" id="total-requests">0</div>
+                    <div class="stat-label">Total Requests</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-up"></i> Live monitoring
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-value" id="high-risk-count">0</div>
+                    <div class="stat-label">High Risk Incidents</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-bolt"></i> Requires attention
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="stat-value" id="review-count">0</div>
+                    <div class="stat-label">Pending Review</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-clock"></i> Action needed
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Risk Distribution Over Time</div>
+                        <select class="chart-filter" id="timeFrameSelector" onchange="updateRiskChart()">
+                            <option value="7">Last 7 Days</option>
+                            <option value="30">Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
+                        </select>
+                    </div>
+                    <canvas id="riskChart" style="height: 300px;"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Threat Categories</div>
+                    </div>
+                    <canvas id="categoryChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Requests Table -->
+            <div class="table-card">
+                <div class="chart-header">
+                    <div class="chart-title">Recent AI Requests</div>
+                    <span class="chart-filter">Last 10 requests</span>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>User</th>
+                                <th>Prompt</th>
+                                <th>Toxicity</th>
+                                <th>Bio Safety</th>
+                                <th>Cyber Risk</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTable">
+                            {% for req in recent_requests %}
+                            <tr>
+                                <td>{{ req.timestamp.strftime('%H:%M:%S') if req.timestamp else 'N/A' }}</td>
+                                <td><span class="badge badge-lime">{{ req.user_id if req.user_id else 'Unknown'
+                                        }}</span></td>
+                                <td title="{{ req.prompt }}">{{ req.prompt[:50] }}...</td>
+                                <td>
+                                    <span
+                                        class="badge {% if req.toxicity_score > 0.8 %}badge-danger{% elif req.toxicity_score > 0.6 %}badge-warning{% else %}badge-success{% endif %}">
+                                        {{ "%.2f"|format(req.toxicity_score) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge {% if req.bio_safety_score > 0.8 %}badge-danger{% elif req.bio_safety_score > 0.6 %}badge-warning{% else %}badge-success{% endif %}">
+                                        {{ "%.2f"|format(req.bio_safety_score) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge {% if req.cyber_safety_score > 0.8 %}badge-danger{% elif req.cyber_safety_score > 0.6 %}badge-warning{% else %}badge-success{% endif %}">
+                                        {{ "%.2f"|format(req.cyber_safety_score) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if req.requires_review %}
+                                    <span class="badge badge-warning">Review Required</span>
+                                    {% else %}
+                                    <span class="badge badge-lime">{{ req.intervention_action }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Test Analysis Form -->
+            <div class="analysis-card">
+                <div class="chart-title" style="margin-bottom: 1.5rem;">
+                    <i class="fas fa-flask"></i> Test Prompt Analysis
+                </div>
+                data.high_risk_count?.[0]?.count || 0;
+                document.getElementById('review-count').textContent =
+                data.review_count?.[0]?.count || 0;
+                } catch (error) {
+                console.error('Error loading stats:', error);
+                }
+                }
+
+                async function refreshStats() {
+                await loadStats();
+                location.reload();
+                }
+
+                // Update risk chart based on timeframe
+                async function updateRiskChart() {
+                const days = document.getElementById('timeFrameSelector').value;
+
+                try {
+                const response = await fetch(`/api/risk-distribution?days=${days}`);
+                const data = await response.json();
+
+                // Update chart data
+                riskChart.data.labels = data.labels;
+                riskChart.data.datasets[0].data = data.high;
+                riskChart.data.datasets[1].data = data.medium;
+                riskChart.data.datasets[2].data = data.low;
+                riskChart.update();
+                } catch (error) {
+                console.error('Error updating chart:', error);
+                }
+                }
+
+                // Initialize risk chart
+                async function initRiskChart() {
+                try {
+                console.log('Initializing risk chart...');
+                const riskCtx = document.getElementById('riskChart').getContext('2d');
+
+                // Fetch initial data
+                const response = await fetch('/api/risk-distribution?days=7');
+                const data = await response.json();
+                console.log('Risk data:', data);
+
+                riskChart = new Chart(riskCtx, {
+                type: 'bar',
+                data: {
+                labels: data.labels,
+                datasets: [{
+                label: 'High Risk',
+                data: data.high,
+                backgroundColor: 'rgba(255, 50, 50, 1)',
+                borderColor: '#ff0000',
+                borderWidth: 2
+                }, {
+                label: 'Medium Risk',
+                data: data.medium,
+                backgroundColor: 'rgba(255, 165, 0, 1)',
+                borderColor: '#ff8800',
+                borderWidth: 2
+                }, {
+                label: 'Low Risk',
+                data: data.low,
+                backgroundColor: 'rgba(204, 255, 0, 1)',
+                borderColor: '#ccff00',
+                borderWidth: 2
+                }]
+                },
+                options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'x',
+                plugins: {
+                legend: {
+                labels: {
+                color: '#fff',
+                font: {
+                family: 'Space Grotesk',
+                size: 13,
+                weight: '600'
+                }
+                }
+                }
+                },
+                scales: {
+                y: {
+                stacked: false,
+                grid: { color: 'rgba(255,255,255,0.05)' },
+                ticks: { color: '#888' }
+                },
+                x: {
+                stacked: false,
+                grid: { color: 'rgba(255,255,255,0.05)' },
+                ticks: { color: '#888' }
+                }
+                }
+                }
+                });
+                console.log('Risk chart initialized successfully');
+                } catch (error) {
+                console.error('Error initializing risk chart:', error);
+                throw error;
+                }
+                }
+
+                // Initialize category chart
+                function initCategoryChart() {
+                try {
+                console.log('Initializing category chart...');
+                const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+                const categoryChart = new Chart(categoryCtx, {
+                type: 'pie',
+                data: {
+                labels: ['Toxicity', 'Bio Safety', 'Cyber Risk', 'Privacy'],
+                datasets: [{
+                data: [30, 25, 35, 10],
+                backgroundColor: [
+                'rgba(255, 0, 0, 0.8)',
+                'rgba(255, 100, 0, 0.8)',
+                'rgba(255, 200, 0, 0.8)',
+                'rgba(204, 255, 0, 0.8)'
+                ],
+                borderColor: '#050505',
+                borderWidth: 2
+                }]
+                },
+                options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                legend: {
+                position: 'bottom',
+                labels: {
+                color: '#888',
+                font: { family: 'Space Grotesk' },
+                padding: 15
+                }
+                }
+                }
+                }
+                });
+                console.log('Category chart initialized successfully');
+                } catch (error) {
+                console.error('Error initializing category chart:', error);
+                }
+                }
+
+                // Analysis form handler
+                document.getElementById('analyzeForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const prompt = document.getElementById('prompt').value;
+                const resultDiv = document.getElementById('analysisResult');
+                resultDiv.innerHTML = '<div class="alert alert-info"><i class="fas fa-spinner fa-spin"></i>
+                    Analyzing prompt...</div>';
+
+                try {
+                const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                prompt: prompt,
+                model_config: { model: 'gpt-4' }
+                })
+                });
+
+                const data = await response.json();
+
+                let alertClass = 'alert-success';
+                let icon = 'fa-check-circle';
+                if (data.intervention) {
+                if (data.intervention.action === 'BLOCK') {
+                alertClass = 'alert-danger';
+                icon = 'fa-ban';
+                } else if (data.intervention.action === 'WARN' || data.intervention.action === 'REQUIRE_REVIEW')
+                {
+                alertClass = 'alert-warning';
+                icon = 'fa-exclamation-triangle';
+                }
+
+                resultDiv.innerHTML = `
+                <div class="alert ${alertClass}">
+                    <h6><i class="fas ${icon}"></i> Analysis Complete</h6>
+                    <p><strong>Action:</strong> <span
+                            class="badge badge-${alertClass.split('-')[1]}">${data.intervention.action}</span>
+                    </p>
+                    <p><strong>Reason:</strong> ${data.intervention.reason}</p>
+                    <p><strong>Requires Review:</strong> ${data.requires_review ? 'Yes' : 'No'}</p>
+                    ${data.response ? `<p><strong>Response:</strong> ${data.response}</p>` : ''}
+                    <p style="margin-top: 1rem;"><small><i class="fas fa-fingerprint"></i> Request ID:
+                            ${data.request_id}</small></p>
+                </div>
+                `;
+                }
+
+                // Refresh stats and chart after new analysis
+                loadStats();
+                updateRiskChart();
+
+                } catch (error) {
+                resultDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-times-circle"></i>
+                    Error: ${error.message}</div>`;
+                }
+                });
+
+                // Initial load
+                console.log('Dashboard loading...');
+                console.log('Chart.js available:', typeof Chart !== 'undefined');
+
+                loadStats();
+
+                // Initialize charts after DOM is fully loaded
+                if (typeof Chart !== 'undefined') {
+                initRiskChart().catch(error => {
+                console.error('Failed to initialize risk chart:', error);
+                });
+                initCategoryChart();
+                } else {
+                console.error('Chart.js library not loaded!');
+                }
+
+                // Auto-refresh stats every 30 seconds
+                setInterval(loadStats, 30000);
+                </script>
+</body>
+
+</html>

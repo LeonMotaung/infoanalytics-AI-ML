@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>aizygote | Adaptive Cyber Security</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Theme Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#050505',
+                            800: '#0a0a0a',
+                            700: '#121212',
+                            600: '#1c1c1c'
+                        },
+                        brand: {
+                            lime: '#ccff00',
+                            limeHover: '#b3e600',
+                            dim: 'rgba(204, 255, 0, 0.1)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #e5e5e5;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Glow */
+        .ambient-glow {
+            position: fixed;
+            top: -10%;
+            left: 20%;
+            width: 1000px;
+            height: 1000px;
+            background: radial-gradient(circle, rgba(204, 255, 0, 0.05) 0%, rgba(0, 0, 0, 0) 60%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(80px);
+            animation: pulseGlow 10s infinite alternate;
+        }
+
+        .ambient-glow-2 {
+            position: fixed;
+            bottom: -10%;
+            right: -10%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(60, 60, 255, 0.03) 0%, rgba(0, 0, 0, 0) 60%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(80px);
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+            100% { transform: translate(50px, 50px) scale(1.1); opacity: 0.8; }
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(204, 255, 0, 0.3);
+            transform: translateY(-4px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ccff00; }
+
+        /* Animations */
+        .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Floating Card Animation */
+        .float-card { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+
+<body class="antialiased font-sans selection:bg-brand-lime selection:text-black">
+
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow-2"></div>
+
+    <div class="min-h-screen flex flex-col md:flex-row">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 border-r border-white/5 bg-dark-800/50 backdrop-blur-xl flex flex-col fixed md:sticky top-0 h-auto md:h-screen z-50">
+            <div class="p-6 flex items-center gap-3">
+                <div class="w-8 h-8 rounded bg-brand-lime flex items-center justify-center text-black font-bold font-display text-xl">a</div>
+                <span class="font-display font-bold text-xl tracking-tight text-white">aizygote</span>
+            </div>
+
+            <nav class="flex-1 px-4 py-4 space-y-1">
+                <a href="/" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-brand-lime bg-brand-lime/10 rounded-lg border border-brand-lime/20 transition-all duration-200">
+                    <i class="fas fa-info-circle w-5"></i> Home
+                </a>
+                <a href="/services" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200">
+                    <i class="fas fa-layer-group w-5"></i> Services
+                </a>
+                <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200">
+                    <i class="fas fa-chart-pie w-5"></i> Dashboard
+                </a>
+                <div class="pt-4 pb-2 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Compliance</div>
+                <a href="/alerts" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200">
+                    <i class="fas fa-bell w-5"></i> Alerts
+                </a>
+                <a href="/policies" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200">
+                    <i class="fas fa-shield-alt w-5"></i> Policies
+                </a>
+                <a href="/requests" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200">
+                    <i class="fas fa-database w-5"></i> Requests
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-white/5">
+                <div class="flex items-center gap-3 px-4 py-2">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-gray-700 to-gray-600 border border-white/10"></div>
+                    <div>
+                        <div class="text-sm font-medium text-white">Admin User</div>
+                        <div class="text-xs text-gray-500">admin@aizygote.ai</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-12 lg:p-20 ml-0 overflow-y-auto flex flex-col justify-center min-h-screen">
+            
+            <!-- Hero Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">
+                
+                <!-- Hero Text -->
+                <div class="fade-in-up">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 text-brand-lime cursor-pointer hover:bg-brand-lime hover:text-black transition-colors">
+                            <i class="fas fa-play text-xs ml-0.5"></i>
+                        </div>
+                        <span class="text-brand-lime font-display font-medium text-sm uppercase tracking-widest">Adaptive Security</span>
+                    </div>
+
+                    <h1 class="text-5xl md:text-7xl font-display font-bold text-white mb-6 leading-tight">
+                        Cyber Defense <br>
+                        That Evolves <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-lime to-emerald-500">Daily.</span>
+                    </h1>
+
+                    <p class="text-lg text-gray-400 leading-relaxed max-w-lg mb-10">
+                        AI-driven protection that learns, adapts, and grows stronger every single day — so you stay one step ahead of every digital threat.
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 mb-12">
+                        <button class="bg-brand-lime text-black font-bold px-8 py-4 rounded-xl hover:bg-brand-limeHover transition-all duration-300 flex items-center gap-2 group">
+                            Get Protected Today 
+                            <i class="fas fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                        <button class="bg-white/5 text-white font-medium px-8 py-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors backdrop-blur-sm">
+                            View Demo
+                        </button>
+                    </div>
+
+                    <!-- Mini Stats -->
+                    <div class="flex items-center gap-8 border-t border-white/10 pt-8">
+                        <div>
+                            <div class="text-2xl font-display font-bold text-white">1,600+</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Active Users</div>
+                        </div>
+                        <div class="w-px h-8 bg-white/10"></div>
+                        <div>
+                            <div class="text-2xl font-display font-bold text-white">300+</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Protected Apps</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Visual -->
+                <div class="relative h-full min-h-[400px] flex items-center justify-center fade-in-up delay-200 hidden lg:flex">
+                    <!-- Decorative circles behind -->
+                    <div class="absolute w-96 h-96 rounded-full border border-white/5 animate-[spin_10s_linear_infinite]"></div>
+                    <div class="absolute w-[500px] h-[500px] rounded-full border border-white/5 animate-[spin_15s_linear_infinite_reverse]"></div>
+
+                    <!-- Floating Glass Card -->
+                    <div class="glass-panel p-8 rounded-3xl max-w-sm w-full float-card relative z-10 bg-dark-800/40">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-white font-display font-bold text-xl">Scale Without Fear</h3>
+                            <div class="w-10 h-10 rounded-full bg-brand-lime/10 flex items-center justify-center text-brand-lime border border-brand-lime/20">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+                            aizygote grows with your needs. No added complexity. Deploy in seconds.
+                        </p>
+                        
+                        <!-- Fake Activity Graph -->
+                        <div class="flex items-end gap-1 h-16 mt-4">
+                            <div class="bg-white/10 w-1/5 h-1/3 rounded-t"></div>
+                            <div class="bg-white/10 w-1/5 h-1/2 rounded-t"></div>
+                            <div class="bg-brand-lime/50 w-1/5 h-2/3 rounded-t animate-pulse"></div>
+                            <div class="bg-white/10 w-1/5 h-full rounded-t"></div>
+                            <div class="bg-white/10 w-1/5 h-3/4 rounded-t"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in-up delay-300">
+                
+                <!-- Feature 1 -->
+                <div class="glass-panel p-6 rounded-2xl group cursor-pointer">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white group-hover:bg-brand-lime group-hover:text-black transition-colors">
+                            <i class="fas fa-radar"></i>
+                        </div>
+                        <i class="fas fa-arrow-right text-gray-600 group-hover:text-white transition-colors -rotate-45 group-hover:rotate-0 transform duration-300"></i>
+                    </div>
+                    <h3 class="text-lg font-display font-bold text-white mb-2">Real-Time Threat Detection</h3>
+                    <p class="text-sm text-gray-400">Instantly identifies anomalies in traffic before they breach your perimeter.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="glass-panel p-6 rounded-2xl group cursor-pointer relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-brand-lime/10 to-transparent rounded-bl-full -mr-4 -mt-4"></div>
+                    
+                    <div class="flex items-center justify-between mb-4 relative z-10">
+                        <div class="w-12 h-12 rounded-lg bg-brand-lime/10 border border-brand-lime/20 flex items-center justify-center text-brand-lime text-xl font-display font-bold">
+                            AI
+                        </div>
+                        <button class="text-[10px] font-bold uppercase tracking-wider border border-brand-lime/30 text-brand-lime px-2 py-1 rounded hover:bg-brand-lime hover:text-black transition-colors">
+                            Explore Logic
+                        </button>
+                    </div>
+                    <h3 class="text-lg font-display font-bold text-white mb-2">Self-Learning Engine</h3>
+                    <p class="text-sm text-gray-400">Models that train on your specific data patterns to reduce false positives.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="glass-panel p-0 rounded-2xl group cursor-pointer overflow-hidden relative h-full min-h-[180px]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
+                    <!-- Abstract BG instead of image URL for reliability -->
+                    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTAwIDBsMTAwIDEwMC0xMDAgMTAwTDAgMTAweiIgZmlsbD0iIzIyMiIgZmlsbC1vcGFjaXR5PSIwLjEiLz48L3N2Zz4=')] opacity-30 group-hover:scale-110 transition-transform duration-700"></div>
+                    
+                    <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <h3 class="text-lg font-display font-bold text-white mb-1">Team Collaboration</h3>
+                                <p class="text-sm text-gray-400">Secure workspaces.</p>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white backdrop-blur-sm">
+                                <i class="fas fa-users text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>

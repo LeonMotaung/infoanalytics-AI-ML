@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | aizygote</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Theme Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#050505',
+                            800: '#0a0a0a',
+                            700: '#121212',
+                            600: '#1c1c1c'
+                        },
+                        brand: {
+                            lime: '#ccff00',
+                            limeHover: '#b3e600',
+                            dim: 'rgba(204, 255, 0, 0.1)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #e5e5e5;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Glow */
+        .ambient-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(204, 255, 0, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(80px);
+            animation: pulseGlow 8s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Input Autofill Fix */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #0a0a0a inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+
+<body class="antialiased font-sans selection:bg-brand-lime selection:text-black min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="ambient-glow"></div>
+
+    <!-- Login Card -->
+    <div class="w-full max-w-md glass-panel rounded-3xl p-8 md:p-10 relative overflow-hidden fade-in">
+        
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-brand-lime flex items-center justify-center text-black font-bold font-display text-2xl">a</div>
+                <span class="font-display font-bold text-2xl tracking-tight text-white">aizygote</span>
+            </div>
+            <h2 class="text-xl text-white font-medium">Welcome back</h2>
+            <p class="text-gray-500 text-sm mt-1">Enter your credentials to access the control panel.</p>
+        </div>
+
+        <!-- Form -->
+        <form onsubmit="handleLogin(event)" class="space-y-5">
+            
+            <!-- Username -->
+            <div class="space-y-1">
+                <label for="username" class="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">Username</label>
+                <div class="relative group">
+                    <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 group-focus-within:text-brand-lime transition-colors"></i>
+                    <input type="text" id="username" name="username" required 
+                        class="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-brand-lime/50 focus:ring-1 focus:ring-brand-lime/50 transition-all"
+                        placeholder="admin">
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="space-y-1">
+                <label for="password" class="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">Password</label>
+                <div class="relative group">
+                    <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 group-focus-within:text-brand-lime transition-colors"></i>
+                    <input type="password" id="password" name="password" required 
+                        class="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-brand-lime/50 focus:ring-1 focus:ring-brand-lime/50 transition-all"
+                        placeholder="••••••••">
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-between text-xs">
+                <label class="flex items-center gap-2 text-gray-400 cursor-pointer hover:text-white transition-colors">
+                    <input type="checkbox" class="rounded bg-white/10 border-white/20 text-brand-lime focus:ring-brand-lime/50">
+                    Remember me
+                </label>
+                <a href="#" class="text-brand-lime hover:text-brand-limeHover transition-colors">Forgot password?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submitBtn" class="w-full bg-brand-lime text-black font-bold py-3.5 rounded-xl hover:bg-brand-limeHover transition-all duration-300 flex items-center justify-center gap-2 group shadow-[0_0_20px_rgba(204,255,0,0.2)] hover:shadow-[0_0_30px_rgba(204,255,0,0.4)]">
+                <span>Sign In</span>
+                <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </button>
+
+        </form>
+
+        <!-- Footer -->
+        <div class="mt-8 pt-6 border-t border-white/5 text-center">
+            <p class="text-sm text-gray-500">
+                Don't have an account? 
+                <a href="#" class="text-white font-medium hover:text-brand-lime transition-colors">Contact Admin</a>
+            </p>
+        </div>
+
+    </div>
+
+    <div class="fixed bottom-6 text-center">
+        <p class="text-xs text-gray-600">&copy; 2024 aizygote Security Systems. All rights reserved.</p>
+    </div>
+
+    <script>
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const originalContent = btn.innerHTML;
+            
+            // Loading State
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Authenticating...';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // For prototype purposes, just redirect to dashboard
+                window.location.href = '/dashboard';
+                
+                // If you were keeping them on page (e.g. error), you'd reset:
+                // btn.disabled = false;
+                // btn.innerHTML = originalContent;
+            }, 1500);
+        }
+    </script>
+
+</body>
+</html>
