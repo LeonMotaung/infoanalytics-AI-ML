@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
@@ -13,7 +13,6 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -35,7 +34,7 @@
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
                     }
                 }
             }
@@ -49,60 +48,65 @@
             overflow-x: hidden;
         }
 
-        /* Ambient Glow */
+        /* Ambient Glow Effects */
         .ambient-glow {
             position: fixed;
             top: -10%;
             left: 20%;
             width: 1000px;
             height: 1000px;
-            background: radial-gradient(circle, rgba(204, 255, 0, 0.05) 0%, rgba(0, 0, 0, 0) 60%);
+            background: radial-gradient(circle, rgba(204, 255 0 / 0.08) 0%, transparent 60%);
             border-radius: 50%;
             pointer-events: none;
             z-index: -1;
-            filter: blur(80px);
-            animation: pulseGlow 10s infinite alternate;
+            filter: blur(100px);
+            animation: pulseGlow 12s ease-in-out infinite alternate;
         }
 
         .ambient-glow-2 {
             position: fixed;
-            bottom: -10%;
+            bottom: -15%;
             right: -10%;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(60, 60, 255, 0.03) 0%, rgba(0, 0, 0, 0) 60%);
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, rgba(100 100 255 / 0.06) 0%, transparent 60%);
             border-radius: 50%;
             pointer-events: none;
             z-index: -1;
-            filter: blur(80px);
+            filter: blur(90px);
         }
 
         @keyframes pulseGlow {
             0% {
                 transform: translate(0, 0) scale(1);
-                opacity: 0.5;
+                opacity: 0.6;
             }
 
             100% {
-                transform: translate(50px, 50px) scale(1.1);
-                opacity: 0.8;
+                transform: translate(60px, 60px) scale(1.15);
+                opacity: 0.9;
             }
         }
 
-        /* Glassmorphism */
+        /* Glassmorphism Panel */
         .glass-panel {
-            background: rgba(20, 20, 20, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(20, 20, 20, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(204, 255, 0, 0.2);
+            transform: translateY(-4px);
         }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
         }
 
         ::-webkit-scrollbar-track {
@@ -111,16 +115,16 @@
 
         ::-webkit-scrollbar-thumb {
             background: #333;
-            border-radius: 3px;
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
             background: #ccff00;
         }
 
-        /* Animations */
+        /* Fade In Animation */
         .fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
+            animation: fadeInUp 0.9s ease-out forwards;
             opacity: 0;
         }
 
@@ -139,7 +143,7 @@
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(40px);
             }
 
             to {
@@ -152,42 +156,41 @@
 
 <body class="antialiased font-sans selection:bg-brand-lime selection:text-black">
 
+    <!-- Ambient Background Effects -->
     <div class="ambient-glow"></div>
     <div class="ambient-glow-2"></div>
 
     <div class="min-h-screen flex flex-col md:flex-row">
 
-        <!-- Sidebar Navigation -->
+        <!-- Sidebar -->
         <aside
-            class="w-full md:w-64 border-r border-white/5 bg-dark-800/50 backdrop-blur-xl flex flex-col fixed md:sticky top-0 h-auto md:h-screen z-50 transition-all duration-300">
-            <div class="p-6 flex items-center justify-between gap-3">
+            class="w-full md:w-64 border-r border-white/5 bg-dark-800/60 backdrop-blur-2xl flex flex-col fixed md:sticky top-0 h-screen z-50 transition-all duration-300">
+            <div class="p-6 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <img src="{{ url_for('static', filename='images/trend.png') }}" alt="InFoAnalytics Logo"
-                        class="w-8 h-8 rounded object-contain">
+                    <img src="{{ url_for('static', filename='images/trend.png') }}" alt="Logo" class="w-9 h-9 rounded">
                     <span class="font-display font-bold text-xl tracking-tight text-white">InFoAnalytics</span>
                 </div>
-
-                <button id="mobile-menu-btn" class="md:hidden text-gray-400 hover:text-white focus:outline-none">
-                    <i class="fas fa-bars text-xl"></i>
+                <button id="mobile-menu-btn" class="md:hidden text-gray-400 hover:text-white">
+                    <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
 
-            <div id="mobile-menu" class="hidden md:block w-full flex-1 flex flex-col">
-                <nav class="flex-1 px-4 py-4 space-y-1">
-                    <a href="/"
-                        class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200">
-                        <i class="fas fa-info-circle w-5"></i> Home
-                    </a>
-                    <a href="/dashboard"
-                        class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-brand-lime bg-brand-lime/10 rounded-lg border border-brand-lime/20 transition-all duration-200">
-                        <i class="fas fa-chart-pie w-5"></i> Dashboard
-                    </a>
+            <div id="mobile-menu" class="hidden md:flex flex-col flex-1>
+                <nav class=" flex-1 px-4 py-4 space-y-1">
+                <a href="/"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition">
+                    <i class="fas fa-home w-5"></i> Home
+                </a>
+                <a href="/dashboard"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-brand-lime bg-brand-lime/10 rounded-lg border border-brand-lime/20">
+                    <i class="fas fa-chart-pie w-5"></i> Dashboard
+                </a>
                 </nav>
 
                 <div class="p-4 border-t border-white/5">
-                    <div class="flex items-center gap-3 px-4 py-2">
+                    <div class="flex items-center gap-3">
                         <div
-                            class="w-8 h-8 rounded-full bg-gradient-to-tr from-gray-700 to-gray-600 border border-white/10">
+                            class="w-10 h-10 rounded-full bg-gradient-to-tr from-gray-600 to-gray-500 border border-white/10">
                         </div>
                         <div>
                             <div class="text-sm font-medium text-white">Admin User</div>
@@ -199,97 +202,98 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 p-6 md:p-12 ml-0 overflow-y-auto min-h-screen">
+        <main class="flex-1 p-6 md:p-12 md:ml-0 lg:ml-0 min-h-screen">
 
             <div class="fade-in-up">
                 <h1 class="text-3xl md:text-4xl font-display font-bold text-white mb-2">Dashboard</h1>
-                <p class="text-gray-400 mb-8">Real-time economic intelligence and predictive analytics.</p>
+                <p class="text-gray-400 mb-10">Real-time economic intelligence and predictive analytics.</p>
             </div>
 
             <!-- Prediction Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 fade-in-up delay-100">
-
-                <!-- Main Chart -->
-                <div class="lg:col-span-2 glass-panel p-6 rounded-2xl">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 fade-in-up delay-100">
+                <!-- Main Forecast Chart -->
+                <div class="lg:col-span-2 glass-panel p-8 rounded-2xl">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-display font-bold text-white">Budget Deficit Forecast</h3>
+                        <h3 class="text-xl font-display font-bold text-white">Budget Deficit Forecast</h3>
                         <span
-                            class="px-3 py-1 rounded-full bg-brand-lime/10 text-brand-lime text-xs font-bold border border-brand-lime/20">HIGH
+                            class="px-4 py-1.5 rounded-full bg-brand-lime/10 text-brand-lime text-xs font-bold border border-brand-lime/20">HIGH
                             ACCURACY MODEL</span>
                     </div>
-
                     <div
-                        class="w-full h-[400px] rounded-xl overflow-hidden bg-dark-900/50 border border-white/5 flex items-center justify-center relative">
+                        class="w-full h-96 md:h-[420px] bg-dark-900/40 rounded-xl border border-white/5 overflow-hidden">
                         <img src="{{ url_for('static', filename='images/budget_prediction.png') }}"
-                            alt="Budget Prediction Chart" class="w-full h-full object-contain">
+                            alt="Budget Forecast" class="w-full h-full object-contain">
                     </div>
                 </div>
 
-                <!-- Metrics & Features -->
+                <!-- Side Metrics -->
                 <div class="space-y-6">
                     <div class="glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-display font-bold text-white mb-4">Model Performance</h3>
+                        <h3 class="text-lg font-display font-bold text-white mb-5 mb-5">Model Performance</h3>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
-                                <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Avg. RMSE</div>
-                                <div class="text-xl md:text-2xl font-bold text-white">53,889.33</div>
+                            <div class="p-5 rounded-xl bg-white/5 border border-white/10 text-center">
+                                <div class="text-xs uppercase tracking-widest text-gray-500 mb-1">Avg. RMSE</div>
+                                <div class="text-2xl font-bold text-white mt-2">53,889.33</div>
                             </div>
-                            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
-                                <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Avg. R² Score</div>
-                                <div class="text-xl md:text-2xl font-bold text-brand-lime">0.8660</div>
+                            <div class="p-5 rounded-xl bg-white/5 border border-white/10 text-center">
+                                <div class="text-xs uppercase tracking-widest text-gray-500 mb-1">R² Score</div>
+                                <div class="text-2xl font-bold text-brand-lime mt-2">0.8660</div>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-4 leading-relaxed">
-                            *Metrics derived from Time Series Cross-Validation (R² closer to 1.0 is better).
-                        </p>
+                        <p class="text-xs text-gray-500 mt-5 leading-relaxed">*From Time Series CV</p>
                     </div>
 
                     <div class="glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-display font-bold text-white mb-4">Top Drivers (Feature Importance)</h3>
-                        <div class="space-y-3">
+                        <h3 class="text-lg font-display font-bold text-white mb-5">Top Feature Importance</h3>
+                        <div class="space-y-4">
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-300">Value_lag_1 (Prev. Period)</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-24 h-1.5 bg-dark-700 rounded-full overflow-hidden">
-                                        <div class="h-full bg-brand-lime" style="width: 78.5%"></div>
+                                <span class="text-gray-300 text-sm">Value_lag_1 (Prev. Period)</span>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-32 h-2 bg-dark-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-brand-lime transition-all duration-1000"
+                                            style="width: 78.5%"></div>
                                     </div>
-                                    <span class="text-white font-mono">0.785</span>
+                                    <span class="font-mono text-white w-12 text-right">0.785</span>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-300">Country_Egypt</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-24 h-1.5 bg-dark-700 rounded-full overflow-hidden">
-                                        <div class="h-full bg-brand-lime" style="width: 1.5%"></div>
+                                <span class="text-gray-300 text-sm">Value_lag_3</span>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-32 h-2 bg-dark-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-brand-lime transition-all duration-1000"
+                                            style="width: 6.4%"></div>
                                     </div>
-                                    <span class="text-white font-mono">0.015</span>
+                                    <span class="font-mono text-white w-12 text-right">0.064</span>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-300">Value_lag_3</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-24 h-1.5 bg-dark-700 rounded-full overflow-hidden">
-                                        <div class="h-full bg-brand-lime" style="width: 6.4%"></div>
+                                <span class="text-gray-300 text-sm">Value_lag_6</span>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-32 h-2 bg-dark-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-brand-lime transition-all duration-1000"
+                                            style="width: 1.4%"></div>
                                     </div>
-                                    <span class="text-white font-mono">0.064</span>
+                                    <span class="font-mono text-white w-12 text-right">0.014</span>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-300">Value_roll_mean_3</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-24 h-1.5 bg-dark-700 rounded-full overflow-hidden">
-                                        <div class="h-full bg-brand-lime" style="width: 1.2%"></div>
+                                <span class="text-gray-300 text-sm">Value_roll_mean_3</span>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-32 h-2 bg-dark-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-brand-lime transition-all duration-1000"
+                                            style="width: 1.2%"></div>
                                     </div>
-                                    <span class="text-white font-mono">0.012</span>
+                                    <span class="font-mono text-white w-12 text-right">0.012</span>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-300">Value_lag_6</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-24 h-1.5 bg-dark-700 rounded-full overflow-hidden">
-                                        <div class="h-full bg-brand-lime" style="width: 1.4%"></div>
+                                <span class="text-gray-300 text-sm">Country_Egypt</span>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-32 h-2 bg-dark-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-brand-lime transition-all duration-1000"
+                                            style="width: 1.5%"></div>
                                     </div>
-                                    <span class="text-white font-mono">0.014</span>
+                                    <span class="font-mono text-white w-12 text-right">0.015</span>
                                 </div>
                             </div>
                         </div>
@@ -297,467 +301,221 @@
                 </div>
             </div>
 
-            <!-- Market Analysis Section -->
-            <div class="mt-12 fade-in-up delay-200">
-                <div class="flex items-center justify-between mb-8">
+            <!-- Market Analysis -->
+            <section class="mt-16 fade-in-up delay-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
                     <h2 class="text-3xl font-display font-bold text-white">Market Analysis</h2>
-                    <div class="flex gap-2">
+                    <div class="flex gap-3">
                         <button
-                            class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:text-white hover:bg-white/10 transition-all">Export
+                            class="px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm hover:bg-white/10 transition">Export
                             Report</button>
                         <button
-                            class="px-4 py-2 rounded-lg bg-brand-lime text-black text-sm font-bold hover:bg-brand-limeHover transition-all">Live
+                            class="px-5 py-2.5 rounded-lg bg-brand-lime text-black font-bold text-sm hover:bg-brand-limeHover transition">Live
                             Data</button>
                     </div>
                 </div>
 
-                <!-- Row 1: Clustered Column & Radar -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Charts Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
                     <!-- Clustered Column -->
-                    <div class="glass-panel p-6 rounded-2xl">
-                        <div class="flex justify-between items-start mb-4">
+                    <div class="glass-panel p-6 rounded-2xl xl:col-span-1">
+                        <div class="flex justify-between mb-4">
                             <div>
-                                <h3 class="text-lg font-display font-bold text-white">Fiscal Performance</h3>
-                                <p class="text-xs text-gray-500">Tax Revenue vs Budget Deficit (5-Year Avg)</p>
+                                <h3 class="font-bold text-white">Fiscal Performance</h3>
+                                <p class="text-xs text-gray-500">Tax vs Deficit (5Y Avg)</p>
                             </div>
-                            <div class="p-2 rounded-lg bg-white/5"><i class="fas fa-chart-bar text-brand-lime"></i>
-                            </div>
+                            <i class="fas fa-chart-bar text-brand-lime text-xl"></i>
                         </div>
-                        <div class="w-full h-[350px] flex items-center justify-center">
-                            <img src="{{ url_for('static', filename='images/chart_clustered_column.png') }}"
-                                alt="Clustered Column Chart"
-                                class="max-h-full max-w-full object-contain hover:scale-105 transition-transform duration-500">
-                        </div>
+                        <img src="{{ url_for('static', filename='images/chart_clustered_column.png') }}"
+                            class="w-full h-80 object-contain rounded-lg:hover:scale-105 transition-transform duration-500">
                     </div>
 
-                    <!-- Radar Chart -->
+                    <!-- Radar -->
                     <div class="glass-panel p-6 rounded-2xl">
-                        <div class="flex justify-between items-start mb-4">
+                        <div class="flex justify-between mb-4">
                             <div>
-                                <h3 class="text-lg font-display font-bold text-white">Economic Health</h3>
-                                <p class="text-xs text-gray-500">Multi-metric Comparison (Normalized)</p>
+                                <h3 class="font-bold text-white">Economic Health</h3>
+                                <p class="text-xs text-gray-500">Multi-metric Score</p>
                             </div>
-                            <div class="p-2 rounded-lg bg-white/5"><i class="fas fa-bullseye text-brand-lime"></i></div>
+                            <i class="fas fa-bullseye text-brand-lime text-xl"></i>
                         </div>
-                        <div class="w-full h-[350px] flex items-center justify-center">
-                            <img src="{{ url_for('static', filename='images/chart_radar.png') }}" alt="Radar Chart"
-                                class="max-h-full max-w-full object-contain hover:scale-105 transition-transform duration-500">
+                        <img src="{{ url_for('static', filename='images/chart_radar.png') }}"
+                            class="w-full h-80 object-contain rounded-lg hover:scale-105 transition">
+                    </div>
+
+                    <!-- Stacked Area (span 2 on lg) -->
+                    <div class="glass-panel p-6 rounded-2xl lg:col-span-2 xl:col-span-1">
+                        <div class="flex justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-white">Revenue Trends</h3>
+                                <p class="text-xs text-gray-500">Cumulative Over Time</p>
+                            </div>
+                            <i class="fas fa-layer-group text-brand-lime text-xl"></i>
                         </div>
+                        <img src="{{ url_for('static', filename='images/chart_area_stacked.png') }}"
+                            class="w-full h-80 object-contain rounded-lg hover:scale-[1.02] transition">
+                    </div>
+
+                    <!-- Pie/Donut -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-white">Revenue Share</h3>
+                                <p class="text-xs text-gray-500">By Country</p>
+                            </div>
+                            <i class="fas fa-chart-pie text-brand-lime text-xl"></i>
+                        </div>
+                        <img src="{{ url_for('static', filename='images/chart_pie_donut.png') }}"
+                            class="w-full h-80 object-contain rounded-lg hover:rotate-3 transition">
+                    </div>
+
+                    <!-- Full Width Charts -->
+                    <div class="glass-panel p-6 rounded-2xl lg:col-span-2 xl:col-span-3">
+                        <div class="flex justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-white">Unemployment Trends</h3>
+                                <p class="text-xs text-gray-500">Comparative Rate Analysis</p>
+                            </div>
+                            <i class="fas fa-chart-line text-brand-lime text-xl"></i>
+                        </div>
+                        <img src="{{ url_for('static', filename='images/chart_line_stacked.png') }}"
+                            class="w-full h-96 object-contain rounded-lg hover:scale-[1.01] transition">
                     </div>
                 </div>
+            </section>
 
-                <!-- Row 2: Stacked Area & Pie -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                    <!-- Stacked Area (Span 2) -->
-                    <div class="lg:col-span-2 glass-panel p-6 rounded-2xl">
+            <!-- Strategic Insights Section -->
+            <div class="mt-12 mb-12 fade-in-up delay-300">
+                <h2 class="text-2xl font-display font-bold text-white mb-6">Strategic Insights</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Correlation Heatmap -->
+                    <div class="glass-panel p-6 rounded-2xl">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <h3 class="text-lg font-display font-bold text-white">Revenue Trends</h3>
-                                <p class="text-xs text-gray-500">Cumulative Tax Revenue Over Time</p>
+                                <h3 class="text-lg font-display font-bold text-white">Macroeconomic Correlations</h3>
+                                <p class="text-xs text-gray-500">Indicator Interdependencies</p>
                             </div>
-                            <div class="p-2 rounded-lg bg-white/5"><i class="fas fa-layer-group text-brand-lime"></i>
-                            </div>
+                            <div class="p-2 rounded-lg bg-white/5"><i
+                                    class="fas fa-project-diagram text-brand-lime"></i></div>
                         </div>
-                        <div class="w-full h-[350px] flex items-center justify-center">
-                            <img src="{{ url_for('static', filename='images/chart_area_stacked.png') }}"
-                                alt="Stacked Area Chart"
+                        <div class="w-full h-[450px] flex items-center justify-center overflow-hidden">
+                            <img src="{{ url_for('static', filename='images/chart_correlation.png') }}"
+                                alt="Correlation Heatmap"
                                 class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
                         </div>
                     </div>
 
-                    <!-- Pie Chart -->
+                    <!-- Volatility Chart -->
                     <div class="glass-panel p-6 rounded-2xl">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <h3 class="text-lg font-display font-bold text-white">Revenue Share</h3>
-                                <p class="text-xs text-gray-500">Distribution by Country</p>
+                                <h3 class="text-lg font-display font-bold text-white">Volatility Risk Ranking</h3>
+                                <p class="text-xs text-gray-500">Budget Deficit Stability Analysis</p>
                             </div>
-                            <div class="p-2 rounded-lg bg-white/5"><i class="fas fa-chart-pie text-brand-lime"></i>
-                            </div>
-                        </div>
-                        <div class="w-full h-[350px] flex items-center justify-center">
-                            <img src="{{ url_for('static', filename='images/chart_pie_donut.png') }}" alt="Donut Chart"
-                                </nav>
-
-                            <div class="p-4 border-t border-white/5">
-                                <div class="flex items-center gap-3 px-4 py-2">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-gradient-to-tr from-gray-700 to-gray-600 border border-white/10">
-                                    </div>
-                                    <div>
-                                        <div class="text-sm font-medium text-white">Admin User</div>
-                                        <div class="text-xs text-gray-500">admin@infoanalytics.ai</div>
-                                    </div>
-                                </div>
+                            <div class="p-2 rounded-lg bg-white/5"><i class="fas fa-chart-area text-brand-lime"></i>
                             </div>
                         </div>
-                        </aside>
+                        <div class="w-full h-[450px] flex items-center justify-center">
+                            <img src="{{ url_for('static', filename='images/chart_volatility.png') }}"
+                                alt="Volatility Chart"
+                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                        <!-- Main Content -->
-                        <main class="flex-1 p-6 md:p-12 ml-0 overflow-y-auto min-h-screen">
+            <!-- Sector Analysis Section -->
+            <div class="mt-12 mb-12 fade-in-up delay-300">
+                <h2 class="text-2xl font-display font-bold text-white mb-6">Sector Analysis</h2>
 
-                            <div class="fade-in-up">
-                                <h1 class="text-3xl md:text-4xl font-display font-bold text-white mb-2">Dashboard</h1>
-                                <p class="text-gray-400 mb-8">Real-time economic intelligence and predictive analytics.
-                                </p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Trade Balance -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-lg font-display font-bold text-white">Trade Balance</h3>
+                                <p class="text-xs text-gray-500">Net Exports (Exports - Imports)</p>
                             </div>
-
-                            <!-- Prediction Section -->
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 fade-in-up delay-100">
-
-                                <!-- Main Chart -->
-                                <div class="lg:col-span-2 glass-panel p-6 rounded-2xl">
-                                    <div class="flex justify-between items-center mb-6">
-                                        <h3 class="text-lg font-display font-bold text-white">Budget Deficit Forecast
-                                        </h3>
-                                        <span
-                                            class="px-3 py-1 rounded-full bg-brand-lime/10 text-brand-lime text-xs font-bold border border-brand-lime/20">HIGH
-                                            ACCURACY MODEL</span>
-                                    </div>
-
-                                    <div
-                                        class="w-full h-[400px] rounded-xl overflow-hidden bg-dark-900/50 border border-white/5 flex items-center justify-center relative">
-                                        <img src="{{ url_for('static', filename='images/budget_prediction.png') }}"
-                                            alt="Budget Prediction Chart" class="w-full h-full object-contain">
-                                    </div>
-                                </div>
-
-                                <!-- Metrics & Features -->
-                                <div class="space-y-6">
-                                    <div class="glass-panel p-6 rounded-2xl">
-                                        <h3 class="text-lg font-display font-bold text-white mb-4">Model Performance
-                                        </h3>
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
-                                                <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Avg.
-                                                    RMSE</div>
-                                                <div class="text-xl md:text-2xl font-bold text-white">53,889.33</div>
-                                            </div>
-                                            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
-                                                <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Avg. R²
-                                                    Score</div>
-                                                <div class="text-xl md:text-2xl font-bold text-brand-lime">0.8660</div>
-                                            </div>
-                                        </div>
-                                        <p class="text-xs text-gray-500 mt-4 leading-relaxed">
-                                            *Metrics derived from Time Series Cross-Validation (R² closer to 1.0 is
-                                            better).
-                                        </p>
-                                    </div>
-
-                                    <div class="glass-panel p-6 rounded-2xl">
-                                        <h3 class="text-lg font-display font-bold text-white mb-4">Top Drivers (Feature
-                                            Importance)</h3>
-                                        <div class="space-y-3">
-                                            <div class="flex items-center justify-between text-sm">
-                                                <span class="text-gray-300">Value_lag_1 (Prev. Period)</span>
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-24 h-1.5 bg-dark-700 rounded-full overflow-hidden">
-                                                        <div class="h-full bg-brand-lime" style="width: 78.5%"></div>
-                                                    </div>
-                                                    <span class="text-white font-mono">0.785</span>
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center justify-between text-sm">
-                                                <span class="text-gray-300">Country_Egypt</span>
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-24 h-1.5 bg-dark-700 rounded-full overflow-hidden">
-                                                        <div class="h-full bg-brand-lime" style="width: 1.5%"></div>
-                                                    </div>
-                                                    <span class="text-white font-mono">0.015</span>
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center justify-between text-sm">
-                                                <span class="text-gray-300">Value_lag_3</span>
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-24 h-1.5 bg-dark-700 rounded-full overflow-hidden">
-                                                        <div class="h-full bg-brand-lime" style="width: 6.4%"></div>
-                                                    </div>
-                                                    <span class="text-white font-mono">0.064</span>
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center justify-between text-sm">
-                                                <span class="text-gray-300">Value_roll_mean_3</span>
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-24 h-1.5 bg-dark-700 rounded-full overflow-hidden">
-                                                        <div class="h-full bg-brand-lime" style="width: 1.2%"></div>
-                                                    </div>
-                                                    <span class="text-white font-mono">0.012</span>
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center justify-between text-sm">
-                                                <span class="text-gray-300">Value_lag_6</span>
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-24 h-1.5 bg-dark-700 rounded-full overflow-hidden">
-                                                        <div class="h-full bg-brand-lime" style="width: 1.4%"></div>
-                                                    </div>
-                                                    <span class="text-white font-mono">0.014</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="p-2 rounded-lg bg-white/5"><i class="fas fa-exchange-alt text-brand-lime"></i>
                             </div>
-
-                            <!-- Market Analysis Section -->
-                            <div class="mt-12 fade-in-up delay-200">
-                                <div class="flex items-center justify-between mb-8">
-                                    <h2 class="text-3xl font-display font-bold text-white">Market Analysis</h2>
-                                    <div class="flex gap-2">
-                                        <button
-                                            class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:text-white hover:bg-white/10 transition-all">Export
-                                            Report</button>
-                                        <button
-                                            class="px-4 py-2 rounded-lg bg-brand-lime text-black text-sm font-bold hover:bg-brand-limeHover transition-all">Live
-                                            Data</button>
-                                    </div>
-                                </div>
-
-                                <!-- Row 1: Clustered Column & Radar -->
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                                    <!-- Clustered Column -->
-                                    <div class="glass-panel p-6 rounded-2xl">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 class="text-lg font-display font-bold text-white">Fiscal Performance
-                                                </h3>
-                                                <p class="text-xs text-gray-500">Tax Revenue vs Budget Deficit (5-Year
-                                                    Avg)</p>
-                                            </div>
-                                            <div class="p-2 rounded-lg bg-white/5"><i
-                                                    class="fas fa-chart-bar text-brand-lime"></i>
-                                            </div>
-                                        </div>
-                                        <div class="w-full h-[350px] flex items-center justify-center">
-                                            <img src="{{ url_for('static', filename='images/chart_clustered_column.png') }}"
-                                                alt="Clustered Column Chart"
-                                                class="max-h-full max-w-full object-contain hover:scale-105 transition-transform duration-500">
-                                        </div>
-                                    </div>
-
-                                    <!-- Radar Chart -->
-                                    <div class="glass-panel p-6 rounded-2xl">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 class="text-lg font-display font-bold text-white">Economic Health
-                                                </h3>
-                                                <p class="text-xs text-gray-500">Multi-metric Comparison (Normalized)
-                                                </p>
-                                            </div>
-                                            <div class="p-2 rounded-lg bg-white/5"><i
-                                                    class="fas fa-bullseye text-brand-lime"></i></div>
-                                        </div>
-                                        <div class="w-full h-[350px] flex items-center justify-center">
-                                            <img src="{{ url_for('static', filename='images/chart_radar.png') }}"
-                                                alt="Radar Chart"
-                                                class="max-h-full max-w-full object-contain hover:scale-105 transition-transform duration-500">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Row 2: Stacked Area & Pie -->
-                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                                    <!-- Stacked Area (Span 2) -->
-                                    <div class="lg:col-span-2 glass-panel p-6 rounded-2xl">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 class="text-lg font-display font-bold text-white">Revenue Trends
-                                                </h3>
-                                                <p class="text-xs text-gray-500">Cumulative Tax Revenue Over Time</p>
-                                            </div>
-                                            <div class="p-2 rounded-lg bg-white/5"><i
-                                                    class="fas fa-layer-group text-brand-lime"></i>
-                                            </div>
-                                        </div>
-                                        <div class="w-full h-[350px] flex items-center justify-center">
-                                            <img src="{{ url_for('static', filename='images/chart_area_stacked.png') }}"
-                                                alt="Stacked Area Chart"
-                                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
-                                        </div>
-                                    </div>
-
-                                    <!-- Pie Chart -->
-                                    <div class="glass-panel p-6 rounded-2xl">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 class="text-lg font-display font-bold text-white">Revenue Share</h3>
-                                                <p class="text-xs text-gray-500">Distribution by Country</p>
-                                            </div>
-                                            <div class="p-2 rounded-lg bg-white/5"><i
-                                                    class="fas fa-chart-pie text-brand-lime"></i>
-                                            </div>
-                                        </div>
-                                        <div class="w-full h-[350px] flex items-center justify-center">
-                                            <img src="{{ url_for('static', filename='images/chart_pie_donut.png') }}"
-                                                alt="Donut Chart"
-                                                class="max-h-full max-w-full object-contain hover:rotate-3 transition-transform duration-500">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Row 3: Stacked Line -->
-                                <div class="glass-panel p-6 rounded-2xl">
-                                    <div class="flex justify-between items-start mb-4">
-                                        <div>
-                                            <h3 class="text-lg font-display font-bold text-white">Unemployment Trends
-                                            </h3>
-                                            <p class="text-xs text-gray-500">Comparative Rate Analysis (%)</p>
-                                        </div>
-                                        <div class="p-2 rounded-lg bg-white/5"><i
-                                                class="fas fa-chart-line text-brand-lime"></i></div>
-                                    </div>
-                                    <div class="w-full h-[400px] flex items-center justify-center">
-                                        <img src="{{ url_for('static', filename='images/chart_line_stacked.png') }}"
-                                            alt="Stacked Line Chart"
-                                            class="w-full h-full object-contain hover:scale-[1.01] transition-transform duration-500">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Strategic Insights Section -->
-                            <div class="mt-12 mb-12 fade-in-up delay-300">
-                                <h2 class="text-2xl font-display font-bold text-white mb-6">Strategic Insights</h2>
-
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    <!-- Correlation Heatmap -->
-                                    <div class="glass-panel p-6 rounded-2xl">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 class="text-lg font-display font-bold text-white">Macroeconomic
-                                                    Correlations</h3>
-                                                <p class="text-xs text-gray-500">Indicator Interdependencies</p>
-                                            </div>
-                                            <div class="p-2 rounded-lg bg-white/5"><i
-                                                    class="fas fa-project-diagram text-brand-lime"></i></div>
-                                        </div>
-                                        <div class="w-full h-[450px] flex items-center justify-center overflow-hidden">
-                                            <img src="{{ url_for('static', filename='images/chart_correlation.png') }}"
-                                                alt="Correlation Heatmap"
-                                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
-                                        </div>
-                                    </div>
-
-                                    <!-- Volatility Chart -->
-                                    <div class="glass-panel p-6 rounded-2xl">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 class="text-lg font-display font-bold text-white">Volatility Risk
-                                                    Ranking</h3>
-                                                <p class="text-xs text-gray-500">Budget Deficit Stability Analysis</p>
-                                            </div>
-                                            <div class="p-2 rounded-lg bg-white/5"><i
-                                                    class="fas fa-chart-area text-brand-lime"></i></div>
-                                        </div>
-                                        <div class="w-full h-[450px] flex items-center justify-center">
-                                            <img src="{{ url_for('static', filename='images/chart_volatility.png') }}"
-                                                alt="Volatility Chart"
-                                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Sector Analysis Section -->
-                            <div class="mt-12 mb-12 fade-in-up delay-300">
-                                <h2 class="text-2xl font-display font-bold text-white mb-6">Sector Analysis</h2>
-
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    <!-- Trade Balance -->
-                                    <div class="glass-panel p-6 rounded-2xl">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 class="text-lg font-display font-bold text-white">Trade Balance</h3>
-                                                <p class="text-xs text-gray-500">Net Exports (Exports - Imports)</p>
-                                            </div>
-                                            <div class="p-2 rounded-lg bg-white/5"><i
-                                                    class="fas fa-exchange-alt text-brand-lime"></i></div>
-                                        </div>
-                                        <div class="w-full h-[450px] flex items-center justify-center overflow-hidden">
-                                            <img src="{{ url_for('static', filename='images/chart_trade_balance.png') }}"
-                                                alt="Trade Balance Trends"
-                                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
-                                        </div>
-                                    </div>
-
-                                    <!-- Spending Priorities -->
-                                    <div class="glass-panel p-6 rounded-2xl">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 class="text-lg font-display font-bold text-white">Spending
-                                                    Priorities</h3>
-                                                <p class="text-xs text-gray-500">Education vs Health vs Defence Share
-                                                </p>
-                                            </div>
-                                            <div class="p-2 rounded-lg bg-white/5"><i
-                                                    class="fas fa-coins text-brand-lime"></i></div>
-                                        </div>
-                                        <div class="w-full h-[450px] flex items-center justify-center">
-                                            <img src="{{ url_for('static', filename='images/chart_spending_priorities.png') }}"
-                                                alt="Spending Priorities"
-                                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Deep Dive Analysis Section -->
-                            <div class="mt-12 mb-12 fade-in-up delay-300">
-                                <h2 class="text-2xl font-display font-bold text-white mb-6">Deep Dive Analysis</h2>
-
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    <!-- Crisis Watch: Anomalies -->
-                                    <div class="glass-panel p-6 rounded-2xl">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 class="text-lg font-display font-bold text-white">Crisis Watch</h3>
-                                                <p class="text-xs text-gray-500">Inflation Anomalies (>2 Std Dev)</p>
-                                            </div>
-                                            <div class="p-2 rounded-lg bg-white/5"><i
-                                                    class="fas fa-exclamation-triangle text-red-500"></i></div>
-                                        </div>
-                                        <div class="w-full h-[450px] flex items-center justify-center overflow-hidden">
-                                            <img src="{{ url_for('static', filename='images/chart_anomalies.png') }}"
-                                                alt="Inflation Anomalies"
-                                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
-                                        </div>
-                                    </div>
-
-                                    <!-- Fiscal Health: Debt-to-GDP -->
-                                    <div class="glass-panel p-6 rounded-2xl">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 class="text-lg font-display font-bold text-white">Fiscal Health
-                                                    Check</h3>
-                                                <p class="text-xs text-gray-500">Debt-to-GDP Ratio (Latest Year)</p>
-                                            </div>
-                                            <div class="p-2 rounded-lg bg-white/5"><i
-                                                    class="fas fa-balance-scale text-brand-lime"></i></div>
-                                        </div>
-                                        <div class="w-full h-[450px] flex items-center justify-center">
-                                            <img src="{{ url_for('static', filename='images/chart_debt_to_gdp.png') }}"
-                                                alt="Debt to GDP Ratio"
-                                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </main>
+                        </div>
+                        <div class="w-full h-[450px] flex items-center justify-center overflow-hidden">
+                            <img src="{{ url_for('static', filename='images/chart_trade_balance.png') }}"
+                                alt="Trade Balance Trends"
+                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
+                        </div>
                     </div>
 
-                    <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                            const btn = document.getElementById('mobile-menu-btn');
-                            const menu = document.getElementById('mobile-menu');
+                    <!-- Spending Priorities -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-lg font-display font-bold text-white">Spending Priorities</h3>
+                                <p class="text-xs text-gray-500">Education vs Health vs Defence Share</p>
+                            </div>
+                            <div class="p-2 rounded-lg bg-white/5"><i class="fas fa-coins text-brand-lime"></i></div>
+                        </div>
+                        <div class="w-full h-[450px] flex items-center justify-center">
+                            <img src="{{ url_for('static', filename='images/chart_spending_priorities.png') }}"
+                                alt="Spending Priorities"
+                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                            if (btn && menu) {
-                                btn.addEventListener('click', () => {
-                                    menu.classList.toggle('hidden');
-                                });
-                            }
-                        });
-                    </script>
+            <!-- Deep Dive Analysis Section -->
+            <div class="mt-12 mb-12 fade-in-up delay-300">
+                <h2 class="text-2xl font-display font-bold text-white mb-6">Deep Dive Analysis</h2>
 
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Crisis Watch: Anomalies -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-lg font-display font-bold text-white">Crisis Watch</h3>
+                                <p class="text-xs text-gray-500">Inflation Anomalies (>2 Std Dev)</p>
+                            </div>
+                            <div class="p-2 rounded-lg bg-white/5"><i
+                                    class="fas fa-exclamation-triangle text-red-500"></i></div>
+                        </div>
+                        <div class="w-full h-[450px] flex items-center justify-center overflow-hidden">
+                            <img src="{{ url_for('static', filename='images/chart_anomalies.png') }}"
+                                alt="Inflation Anomalies"
+                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
+                        </div>
+                    </div>
+
+                    <!-- Fiscal Health: Debt-to-GDP -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-lg font-display font-bold text-white">Fiscal Health Check</h3>
+                                <p class="text-xs text-gray-500">Debt-to-GDP Ratio (Latest Year)</p>
+                            </div>
+                            <div class="p-2 rounded-lg bg-white/5"><i class="fas fa-balance-scale text-brand-lime"></i>
+                            </div>
+                        </div>
+                        <div class="w-full h-[450px] flex items-center justify-center">
+                            <img src="{{ url_for('static', filename='images/chart_debt_to_gdp.png') }}"
+                                alt="Debt to GDP Ratio"
+                                class="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+            document.getElementById('mobile-menu').classList.toggle('flex');
+        });
+    </script>
 </body>
 
 </html>
